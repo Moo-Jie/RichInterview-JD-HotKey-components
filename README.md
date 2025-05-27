@@ -1,8 +1,75 @@
-# hotkey
+# Hotkey
 
+本项目选用 hotkey 进行热 key 探测，实现热 key 缓存到 JVM 中，减少对数据库的访问，提高系统性能。
+
+
+## RichInterview 项目使用 hotkey 部署方法
+
+### 出于云服务器性能考虑，本项目默认关闭热点探测服务，若使用，请先打开相关配置。
+
+- 打开 pom.xml  引入hotkey client jar 包的依赖;
+- 打开 application.yml hotkey 配置用于与相关服务器通信;
+- 打开 src/main/java/com/rich/richInterview/config/HotKeyConfig.java 配置热 key 相关信息。
+
+可以通过以下方式步骤部署 hotkey 服务，但同时也推荐使用官方的部署步骤：    
+https://gitee.com/jd-platform-opensource/hotkey#%E5%AE%89%E8%A3%85%E6%95%99%E7%A8%8B
+
+（注意 ： 以下服务打包前请调整相关 IP 和 端口 的配置）
+
+### 1.启动 etcd 脚本（默认端口 2379 及 2380）
+``` windows
+
+./etcd.exe
+
+```
+
+或
+
+``` Linux
+./etcd.sh
+
+```
+
+### 2.启动 worker 服务
+``` windows
+
+java -jar worker-0.0.4-SNAPSHOT.jar --etcd.server=127.0.0.1:2379
+
+```
+
+### 3.在项目中引入 client 服务
+
+本项目源码已作为依赖引入项目中 （但请注意打包时将 client 的 jar 包一并打包）
+``` 
+
+lib/hotkey-client-0.0.4-SNAPSHOT.jar
+
+```
+
+### 4.若您想使用 dashboard
+导入数据库 
+``` 
+
+RichInterviewInitData/hotKeyData.sql 
+
+``` 
+打包并启动 dashboard 服务
+
+``` windows
+
+java -jar dashboard-0.0.4-SNAPSHOT.jar
+
+```
+
+访问    http://【your ip】:【your port】/    即可访问 dashboard 页面。
+输入管理员账号密码（admin，123456）后，即可登录。
+本项目默认已经预设相关 hot key 配置，也可自定义其他配置，但要在项目中添加 hot key。
+
+
+
+## hotkey 官方介绍
 备注：有需要存储海量日志的场景，秒级GB级或数十GB级，可关注我的另一个开源项目[JLog](https://gitee.com/jd-platform-opensource/jlog)，较ELK系列套件在处理日志方面提升10倍性能，且存储降低70%以上。
 
-以下为hotkey相关
 
 ![输入图片说明](https://images.gitee.com/uploads/images/2020/0616/105737_e5b876cd_303698.png "redis热key探测及缓存到JVM (1).png")
 
